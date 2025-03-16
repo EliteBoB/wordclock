@@ -126,8 +126,11 @@ namespace
     if (*end_ptr != 0 || parsed_value < min_value || parsed_value > max_value)
     {
       DLOG("[INFO] Could not parse number value \"");
-      DLOG(str);
-      DLOGLN("\".");
+      DLOG("\" ");
+      DLOG(min_value);
+      DLOG(" <, >");
+      DLOG(max_value);
+      DLOGLN(".");
       return default_value;
     }
     return parsed_value;
@@ -567,23 +570,46 @@ void Iot::maybeSetRTCfromNTP_()
 
 void Iot::setRTCfromConfig_()
 {
-  const DateTime now = rtc_->now();
-  uint16_t year = now.year();
-  uint8_t month = now.month();
-  uint8_t day = now.day();
-  uint8_t hour = now.hour();
-  uint8_t minute = now.minute();
-  uint8_t second = now.second();
-  bool datetime_changed = false;
+  if (get_rtc_found()) {
+    const DateTime now = rtc_->now();
+    uint16_t year = now.year();
+    uint8_t month = now.month();
+    uint8_t day = now.day();
+    uint8_t hour = now.hour();
+    uint8_t minute = now.minute();
+    uint8_t second = now.second();
+    bool datetime_changed = false;
 
-  if (manual_time_value_[0] != 0 && parseTimeValue(manual_time_value_, &hour, &minute, &second))
-  {
-    datetime_changed = true;
-  }
+    if (manual_time_value_[0] != 0 &&
+        parseTimeValue(manual_time_value_, &hour, &minute, &second)) {
+      datetime_changed = true;
+    }  
 
-  if (datetime_changed)
-  {
+  if (datetime_changed) { 
     rtc_->adjust(DateTime(year, month, day, hour, minute, second));
+    }
+  } else {
+    uint16_t year = 0;
+    uint8_t month = 0;
+    uint8_t day = 0;
+    uint8_t hour = 0;
+    uint8_t minute = 0;
+    uint8_t second = 0;
+    if (manual_time_value_[0] != 0 &&
+        parseTimeValue(manual_time_value_, &hour, &minute, &second)) {
+      struct tm timeinfo;
+      if (getLocalTime(&timeinfo))
+      {
+        timeinfo.tm_hour = hour;
+        timeinfo.tm_min = minute;
+        timeinfo.tm_sec = second;
+        time_t t = mktime(&timeinfo);
+        struct timeval tv;
+        tv.tv_usec = 0;
+        tv.tv_sec = t;
+        settimeofday(&tv, NULL);
+      }
+    }
   }
 }
 
