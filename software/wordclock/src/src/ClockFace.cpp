@@ -335,55 +335,58 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
   return true;
 }
 
-// Constants to match the EnglishClockFace.
+// Constants to match the EnglishClockFace. // Updated to match johniak/word-clock layout
 //
 // Letters in lowercase below are not used by the clock.
 
-// ITlISasAM PM
-// A c QUARTER dc
-// TWENTY FIVE x
-// HALF s TEN u TO
-// PAST bu NINE
-// ONE SIX THREE
-// FOUR FIVE TWO
-// EIGHT ELEVEN
-// SEVEN TWELVE
-// TEN sz O'CLOCK
+// IT l IS asth PM a
+// A c FIFTEEN dco
+// TWENTY FIVE xw
+// THIRTY x TEN xw
+// MINUTES e TO ur
+// PASTO ru FOUR t
+// SEVEN x TWELVE
+// NINE FIVE c TWO
+// EIGHT f ELEVEN
+// SIX THREE ONE g
+// TEN sez O'CLOCK
 
-// All the segments of words on the board. The first too numbers are the
+
+
+// All the segments of words on the board. The first two numbers are the
 // coordinate of the first letter of the word, the last is the length. A word
 // must always be on one row.
 #define EN_S_IT 0, 0, 2
 #define EN_S_IS 3, 0, 2
 
-#define EN_H_ONE 0, 5, 3
-#define EN_H_TWO 8, 6, 3
-#define EN_H_THREE 6, 5, 5
-#define EN_H_FOUR 0, 6, 4
-#define EN_H_FIVE 4, 6, 4
-#define EN_H_SIX 3, 5, 3
-#define EN_H_SEVEN 0, 8, 5
-#define EN_H_EIGHT 0, 7, 5
-#define EN_H_NINE 7, 4, 4
-#define EN_H_TEN 0, 9, 3
-#define EN_H_ELEVEN 5, 7, 6
-#define EN_H_TWELVE 5, 8, 6
+#define EN_H_ONE 8, 9, 3
+#define EN_H_TWO 9, 7, 3
+#define EN_H_THREE 3, 9, 5
+#define EN_H_FOUR 7, 5, 4
+#define EN_H_FIVE 4, 7, 4
+#define EN_H_SIX 0, 9, 3
+#define EN_H_SEVEN 0, 6, 5
+#define EN_H_EIGHT 0, 8, 5
+#define EN_H_NINE 0, 7, 4
+#define EN_H_TEN 0, 10, 3
+#define EN_H_ELEVEN 6, 8, 6
+#define EN_H_TWELVE 6, 6, 6
 
-#define EN_H_AM 7, 0, 2
+#define EN_H_AM 10, 0, 0
 #define EN_H_PM 9, 0, 2
 
 #define EN_M_A 0, 1, 1
-#define EN_M_PAST 0, 4, 4
-#define EN_M_TO 9, 3, 2
+#define EN_M_PAST 0, 5, 4
+#define EN_M_TO 3, 5, 2
 
-#define EN_M_TEN 5, 3, 3
-#define EN_M_QUARTER 2, 1, 7
+#define EN_M_TEN 7, 3, 3
+#define EN_M_FIFTEEN 2, 1, 7
 #define EN_M_TWENTY 0, 2, 6
 #define EN_M_TWENTYFIVE 0, 2, 10
 #define EN_M_FIVE 6, 2, 4
-#define EN_M_HALF 0, 3, 4
-#define EN_M_QUART 0, 9, 5
-#define EN_M_QUARTS 0, 9, 6
+#define EN_M_THIRTY 0, 3, 6
+// #define EN_M_QUART 0, 9, 5
+// #define EN_M_QUARTS 0, 9, 6
 
 #define EN_M_OCLOCK 5, 9, 7
 
@@ -494,7 +497,7 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     break;
   case 15:
     updateSegment(EN_M_A);
-    updateSegment(EN_M_QUARTER);
+    updateSegment(EN_M_FIFTEEN);
     updateSegment(EN_M_PAST);
     break;
   case 20:
@@ -506,7 +509,7 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     updateSegment(EN_M_PAST);
     break;
   case 30:
-    updateSegment(EN_M_HALF);
+    updateSegment(EN_M_THIRTY);
     updateSegment(EN_M_PAST);
     break;
   case 35:
@@ -519,7 +522,7 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     break;
   case 45:
     updateSegment(EN_M_A);
-    updateSegment(EN_M_QUARTER);
+    updateSegment(EN_M_FIFTEEN);
     updateSegment(EN_M_TO);
     break;
   case 50:
