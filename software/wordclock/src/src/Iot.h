@@ -28,6 +28,10 @@ public:
   void setup();
   void loop();
 
+ // accessor for rtc_found
+  bool get_rtc_found() { return rtc_found_; }
+  void set_rtc_found(bool b) { rtc_found_ = b; }
+
   // Used for the C callback for the NTP sync.
   RTC_DS3231 *get_rtc() { return rtc_; }
 
@@ -96,6 +100,7 @@ private:
 
   // RTC.
   RTC_DS3231 *rtc_ = nullptr;
+  bool rtc_found_ = false;
 
   // Whether to reboot the ESP (after config updates if MQTT is enabled).
   bool needs_reboot_ = false;
