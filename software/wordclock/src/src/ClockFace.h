@@ -3,11 +3,12 @@
 #include <vector>
 
 // The number of LEDs connected before the start of the matrix.
-#define NEOPIXEL_SIGNALS 4
+// Default 4
+#define NEOPIXEL_SIGNALS 0 
 
-// Matrix dimensions.
-#define NEOPIXEL_ROWS 10
-#define NEOPIXEL_COLUMNS 11
+// Matrix dimensions. // Default 10 rows, 11 columns
+#define NEOPIXEL_ROWS 11
+#define NEOPIXEL_COLUMNS 12
 
 class ClockFace
 {
@@ -42,14 +43,14 @@ public:
   // to be wired in clockwise order, starting from the light sensor position.
   // mapMinute() returns the proper index based on desired location taking
   // orientation into account..
-  enum Corners
-  {
-    TopLeft,
-    BottomLeft,
-    BottomRight,
-    TopRight
-  };
-  uint16_t mapMinute(Corners corner);
+  // enum Corners
+  // {
+  //   TopLeft,
+  //   BottomLeft,
+  //   BottomRight,
+  //   TopRight
+  // };
+  // uint16_t mapMinute(Corners corner);
 
   // Clear the display.
   void clearDisplay();
