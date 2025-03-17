@@ -67,33 +67,33 @@ uint16_t ClockFace::map(int16_t x, int16_t y)
   }
 }
 
-uint16_t ClockFace::mapMinute(Corners corner)
-{
-  switch (_position)
-  {
-  case LightSensorPosition::Bottom:
-    return (static_cast<uint16_t>(corner) + 2) % 4;
-  case LightSensorPosition::Top:
-#ifdef NODO
-    switch (static_cast<uint16_t>(corner))
-    {
-    case 0:
-      return 113;
-    case 1:
-      return 101;
-    case 2:
-      return 12;
-    default:
-      return 0;
-    }
-#else
-    return static_cast<uint16_t>(corner);
-#endif
-  default:
-    DCHECK(false, static_cast<int>(corner));
-    return 0;
-  }
-}
+//uint16_t ClockFace::mapMinute(Corners corner)
+//{
+// switch (_position)
+//  {
+//  case LightSensorPosition::Bottom:
+//    return (static_cast<uint16_t>(corner) + 2) % 4;
+//  case LightSensorPosition::Top:
+//#ifdef NODO
+//    switch (static_cast<uint16_t>(corner))
+//    {
+//    case 0:
+//      return 113;
+//    case 1:
+//      return 101;
+//    case 2:
+//      return 12;
+//    default:
+//      return 0;
+//    }
+//#else
+//    return static_cast<uint16_t>(corner);
+//#endif
+//  default:
+//    DCHECK(false, static_cast<int>(corner));
+//    return 0;
+//  }
+//}
 
 // Lit a segment in updateState.
 void ClockFace::updateSegment(int x, int y, int length)
@@ -319,19 +319,19 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+  //switch (leftover)
+  //{
+  //case 4:
+  //  _state[mapMinute(TopLeft)] = true;
+  //case 3: // fall through
+  //  _state[mapMinute(BottomLeft)] = true;
+  //case 2: // fall through
+  //  _state[mapMinute(BottomRight)] = true;
+  //case 1: // fall through
+  //  _state[mapMinute(TopRight)] = true;
+  //case 0: // fall through
+  //  break;
+  //}
   return true;
 }
 
@@ -538,19 +538,19 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+ // switch (leftover)
+ // {
+ // case 4:
+ //   _state[mapMinute(TopLeft)] = true;
+ // case 3: // fall through
+ //   _state[mapMinute(BottomLeft)] = true;
+ // case 2: // fall through
+ //   _state[mapMinute(BottomRight)] = true;
+ // case 1: // fall through
+ //   _state[mapMinute(TopRight)] = true;
+ // case 0: // fall through
+ //   break;
+ // }
   return true;
 }
 
@@ -737,19 +737,19 @@ bool DutchClockFace::stateForTime(int hour, int minute, int second,
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+ // switch (leftover)
+ // {
+ // case 4:
+ //   _state[mapMinute(TopLeft)] = true;
+ //  case 3: // fall through
+ //    _state[mapMinute(BottomLeft)] = true;
+ // case 2: // fall through
+ //   _state[mapMinute(BottomRight)] = true;
+ // case 1: // fall through
+ //   _state[mapMinute(TopRight)] = true;
+ // case 0: // fall through
+ //   break;
+ // }
   return true;
 }
 
@@ -951,18 +951,18 @@ case 0:
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+ // switch (leftover)
+ // {
+ // case 4:
+ //   _state[mapMinute(TopLeft)] = true;
+ // case 3: // fall through
+ //   _state[mapMinute(BottomLeft)] = true;
+ // case 2: // fall through
+ //   _state[mapMinute(BottomRight)] = true;
+ // case 1: // fall through
+ //   _state[mapMinute(TopRight)] = true;
+ // case 0: // fall through
+ //   break;
+ // }
   return true;
 }
