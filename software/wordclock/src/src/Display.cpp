@@ -27,10 +27,10 @@ void Display::loop()
     _bootAnimations.UpdateAnimations();
   } else if (_mode == MATRIX) {
       if (_matrix_buf.size() >= NEOPIXEL_COLUMNS * NEOPIXEL_ROWS) {
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopLeft), black);
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopRight), black); 
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomLeft), black); 
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomRight), black);  
+        //_pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopLeft), black);
+        //_pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopRight), black); 
+        //_pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomLeft), black); 
+        //_pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomRight), black);  
         DLOGLN("Updating matrix from arbitray color vector");
         uint16_t indexPixel = 0;
         for (int j = 0; j < NEOPIXEL_ROWS; j++) {
@@ -137,13 +137,13 @@ void Display::_circle(uint16_t x, uint16_t y, int radius, RgbColor color)
   }
 }
 
-void Display::_colorCornerPixels(RgbColor color)
-{
-  for (int corner = _clockFace->TopLeft; corner <= _clockFace->TopRight; corner++)
-  {
-    _pixels.SetPixelColor(_clockFace->mapMinute(static_cast<ClockFace::Corners>(corner)), color);
-  }
-}
+//void Display::_colorCornerPixels(RgbColor color)
+//{
+//  for (int corner = _clockFace->TopLeft; corner <= _clockFace->TopRight; corner++)
+//  {
+//    _pixels.SetPixelColor(_clockFace->mapMinute(static_cast<ClockFace::Corners>(corner)), color);
+//  }
+//}
 
 void Display::_circleAnimUpdate(const AnimationParam& param)
 {
@@ -172,9 +172,9 @@ void Display::_circleAnimUpdate(const AnimationParam& param)
     float progress = NeoEase::QuarticOut(param.progress);
     int radius = progress * 15;
     _circle(_circleCenterX, _circleCenterY, radius, _circleColor);
-    if (progress >= .95f && progress <= .98f) {
-      _colorCornerPixels(_circleColor);
-    }
+  //  if (progress >= .95f && progress <= .98f) {
+  //    _colorCornerPixels(_circleColor);
+  //  }
   }
 }
 
