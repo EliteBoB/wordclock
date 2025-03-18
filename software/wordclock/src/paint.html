@@ -119,7 +119,7 @@
 
 <body>
   <h1><img class="logo" src="logo.svg" /> Paint <sup>beta</sup></h1>
-  <canvas width="11" height="10"></canvas>
+  <canvas width="12" height="11"></canvas>
   <section>
     <div class="tools">
       <input type="color" value="#ffffff" disabled>
@@ -137,7 +137,7 @@
     const paintCanvas = document.querySelector("canvas");
     const context = paintCanvas.getContext("2d");
     const colorPicker = document.querySelector("input[type='color']");
-    context.fillRect(0, 0, 11, 10);
+    context.fillRect(0, 0, 12, 11);
     context.fillStyle = "#fff";
 
     let x = 0,
@@ -184,8 +184,8 @@
 
     const updateText = () => {
       let str = "";
-      for (let y = 0; y < 10; y++) {
-        for (let x = 0; x < 11; x++) {
+      for (let y = 0; y < 11; y++) {
+        for (let x = 0; x < 12; x++) {
           const p = context.getImageData(x, y, 1, 1).data;
           // 256 colors palette
           // str += ("00" + palette.indexOf(rgbToHexString(p)).toString(16)).slice(-2);
@@ -230,7 +230,7 @@
     document.getElementById("clear").onclick = () => {
       const style = context.fillStyle;
       context.fillStyle = "#000000";
-      context.fillRect(0, 0, 11, 10);
+      context.fillRect(0, 0, 12, 11);
       updateText();
       context.fillStyle = style;
     };
@@ -284,14 +284,14 @@
       let strOut = "";
       let originalColor = colorPicker.value;
       context.fillStyle = `#0000`;
-      context.fillRect(0, 0, 11, 10);
-      for (let i = 0; i < 110; i++) {
+      context.fillRect(0, 0, 12, 11);
+      for (let i = 0; i < 132; i++) {
         const char = str[i] || 'f';
         let colIdx = parseInt(char, 16);
         strOut += isNaN(colIdx) ? "x" : char;
         const col = isNaN(colIdx) ? customColor : "#" + palette[colIdx];
         context.fillStyle = col;
-        context.fillRect(i % 11, Math.floor(i / 11), 1, 1);
+        context.fillRect(i % 12, Math.floor(i / 12), 1, 1);
       }
       context.fillStyle = originalColor;
       fetchNext(strOut);
@@ -336,7 +336,7 @@
       if (cnt == 8) {
         cnt = 0;
         beep(true);
-        textarea.value = "ff33333fffff3333333333faaaabbfbffaababbbfbbbaabaabbbabbaaabbbbaaaaffbbbbbbbbfff336333ffff333633633333331661333";
+        textarea.value = "fff33333ffffff3333333333ffaaaabbfbfffaababbbfbbbfaabaabbbabbfaaabbbbaaaafffbbbbbbbbffff336333fffff3336336333f33331661333ffffffffffff";
         updateCanvasFromText();
       } else {
         beep();

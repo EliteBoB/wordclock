@@ -64,9 +64,9 @@ namespace Palette
     std::string str = payload.c_str();
 
     std::vector<RgbColor> colors;
-    colors.reserve(110); // Pre-allocate space for efficiency
+    colors.reserve(132); // Pre-allocate space for efficiency
 
-    for (int i = 0; i < min(static_cast<int>(str.length()), 110 * CHARS_PER_COLOR); i += CHARS_PER_COLOR)
+    for (int i = 0; i < min(static_cast<int>(str.length()), 132 * CHARS_PER_COLOR); i += CHARS_PER_COLOR)
     {
       // Combine CHARS_PER_COLOR characters into a single byte value
       try
