@@ -162,8 +162,8 @@
         ? event.targetTouches[0].clientY - rect.top
         : event.offsetY;
       if (isMouseDown) {
-        const newX = Math.floor((evtx / paintCanvas.clientWidth) * 11);
-        const newY = Math.floor((evty / paintCanvas.clientHeight) * 10);
+        const newX = Math.floor((evtx / paintCanvas.clientWidth) * 12);
+        const newY = Math.floor((evty / paintCanvas.clientHeight) * 11);
         context.fillRect(newX, newY, 1, 1);
         x = newX;
         y = newY;

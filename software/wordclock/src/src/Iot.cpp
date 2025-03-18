@@ -831,7 +831,7 @@ void Iot::toggleDisplay_(String payload)
 }
 
 void Iot::setMatrixFromPayload_(String &payload) {
-  if (payload.length() >= 110) {
+  if (payload.length() >=132) {
     display_->setMatrix(Palette::stringToRgb(payload, display_->getColor()));
   } else {
     DLOG("Matrix payload is too short :");
