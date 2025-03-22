@@ -355,6 +355,7 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
 #define EN_M_TWENTYFIVE 0, 2, 10
 #define EN_M_FIVE 6, 2, 4
 #define EN_M_THIRTY 0, 3, 6
+#define EN_M_MINUTES 0, 4, 7
 // #define EN_M_QUART 0, 9, 5
 // #define EN_M_QUARTS 0, 9, 6
 
@@ -383,17 +384,17 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
   updateSegment(EN_S_IT);
   updateSegment(EN_S_IS);
 
-  if (show_ampm)
-  {
-    if (hour < 12) // Midday is PM 
-    {
-      updateSegment(EN_H_AM);
-    }
-    else
-    {
-      updateSegment(EN_H_PM);
-    }
-  }
+  // (show_ampm)
+  //
+  //if (hour < 12) // Midday is PM 
+  //{
+  //  updateSegment(EN_H_AM);
+  //}
+  //else
+  //{
+  //  updateSegment(EN_H_PM);
+  //}
+  //
 
   switch (hour)
   {
@@ -459,48 +460,57 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     break;
   case 5:
     updateSegment(EN_M_FIVE);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 10:
     updateSegment(EN_M_TEN);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 15:
-    updateSegment(EN_M_A);
     updateSegment(EN_M_FIFTEEN);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 20:
     updateSegment(EN_M_TWENTY);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 25:
     updateSegment(EN_M_TWENTYFIVE);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 30:
     updateSegment(EN_M_THIRTY);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_PAST);
     break;
   case 35:
     updateSegment(EN_M_TWENTYFIVE);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_TO);
     break;
   case 40:
     updateSegment(EN_M_TWENTY);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_TO);
     break;
   case 45:
-    updateSegment(EN_M_A);
     updateSegment(EN_M_FIFTEEN);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_TO);
     break;
   case 50:
     updateSegment(EN_M_TEN);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_TO);
     break;
   case 55:
     updateSegment(EN_M_FIVE);
+    updateSegment(EN_M_MINUTES);
     updateSegment(EN_M_TO);
     break;
   default:
