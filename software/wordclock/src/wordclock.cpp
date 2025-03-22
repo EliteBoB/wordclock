@@ -18,16 +18,10 @@
 #include "src/Display.h"
 #include "src/ClockFace.h"
 #include "src/Iot.h"
-#include "src/nodo.h" // Nodo stuff
 RTC_DS3231 rtc;
 boolean rtc_found = false;
 
-// TODO: refactor so we don't need to initialize another clockface here.
-#ifdef NODO
-auto pos = ClockFace::LightSensorPosition::Top;
-#else
 auto pos = ClockFace::LightSensorPosition::Bottom;
-#endif
 
 EnglishClockFace clockFace(pos);
 Display display(&clockFace);

@@ -1,5 +1,4 @@
 #include "logging.h"
-
 #include "Display.h"
 #include "ClockFace.h"
 

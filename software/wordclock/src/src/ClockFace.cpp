@@ -4,8 +4,6 @@
 
 #include "ClockFace.h"
 
-#include "nodo.h" // Nodo stuff
-
 // Number of LEDs on the whole strip.
 #define NEOPIXEL_COUNT (NEOPIXEL_ROWS * NEOPIXEL_COLUMNS + NEOPIXEL_SIGNALS)
 
@@ -38,22 +36,7 @@ uint16_t ClockFace::map(int16_t x, int16_t y)
   {
     static NeoTopology<ColumnMajorAlternating90Layout> sensor_on_top(
         NEOPIXEL_COLUMNS, NEOPIXEL_ROWS);
-#ifdef NODO
-    int ind, inc;
-    // do conversion from normal coordinates to Nodo coordinates
-    ind = sensor_on_top.Map(x, y);
-    if (ind < 11)
-      inc = 1; // one pixel before first row
-    else if (ind < 99)
-      inc = 2; // two pixels before second row
-    else
-      inc = 3; // three pixels
-    // mirror pixel grid
-    ind = 11 * (ind / 11) + 10 - ind % 11;
-    return ind + inc;
-#else
     return sensor_on_top.Map(x, y) + NEOPIXEL_SIGNALS;
-#endif
   }
   case LightSensorPosition::Bottom:
   {
@@ -74,19 +57,6 @@ uint16_t ClockFace::map(int16_t x, int16_t y)
 //  case LightSensorPosition::Bottom:
 //    return (static_cast<uint16_t>(corner) + 2) % 4;
 //  case LightSensorPosition::Top:
-//#ifdef NODO
-//    switch (static_cast<uint16_t>(corner))
-//    {
-//    case 0:
-//      return 113;
-//    case 1:
-//      return 101;
-//    case 2:
-//      return 12;
-//    default:
-//      return 0;
-//    }
-//#else
 //    return static_cast<uint16_t>(corner);
 //#endif
 //  default:
@@ -388,7 +358,7 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
 // #define EN_M_QUART 0, 9, 5
 // #define EN_M_QUARTS 0, 9, 6
 
-#define EN_M_OCLOCK 5, 9, 7
+#define EN_M_OCLOCK 6, 10, 6
 
 bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_ampm)
 {

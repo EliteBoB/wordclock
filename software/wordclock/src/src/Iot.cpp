@@ -12,6 +12,7 @@
 #include <esp_sntp.h>
 #include <string>
 #include <ArduinoJson.h>
+#include <cstdlib> // Required for random number generation
 
 // Name of this IoT object.
 #define THING_NAME "WordClock"
@@ -23,7 +24,7 @@
 // Port used by the IotWebConf HTTP server.
 #define WEB_SERVER_PORT 80
 // Default timezone index from Timezones.h (Paris).
-#define DEFAULT_TIMEZONE "385"
+#define DEFAULT_TIMEZONE "305"
 // Default language (EN)
 #define DEFAULT_CLOCKFACE_LANGUAGE "0"
 // HTTP OK status code.
@@ -95,6 +96,18 @@ namespace
   // returns the parsed value. If it fails, returns `default_value`.
   RgbColor parseColorValue(const char *str, const RgbColor &default_value)
   {
+    if (strcmp(str, "random") == 0)
+    {
+      // Choose a random color from the predefined Palette.
+      int paletteSize = Palette::size(); // Assuming Palette has a size() function.
+      if (paletteSize > 0)
+      {
+        int randomIndex = rand() % paletteSize; // Generate a random index
+        return Palette::getColor(randomIndex);  // Assuming Palette::getColor() returns an RgbColor.
+      }
+      return default_value; // Fallback if palette is empty.
+    }
+  
     bool has_error = str[0] != '#' || str[7] != 0;
     for (int i = 1; i <= 6; i++)
     {
@@ -107,13 +120,34 @@ namespace
       DLOGLN("\".");
       return default_value;
     }
-
+  
     const int parsed_value = strtol(str + 1, nullptr, 16);
     const uint8_t red = (parsed_value >> 16) & 0xFF;
     const uint8_t green = (parsed_value >> 8) & 0xFF;
     const uint8_t blue = parsed_value & 0xFF;
     return RgbColor(red, green, blue);
-  }
+  } 
+  
+ // {
+ //   bool has_error = str[0] != '#' || str[7] != 0;
+ //   for (int i = 1; i <= 6; i++)
+ //   {
+ //     has_error &= !isxdigit(str[i]);
+ //   }
+ //   if (has_error)
+ //   {
+ //     DLOG("[INFO] Could not parse color value \"");
+ //     DLOG(str);
+ //     DLOGLN("\".");
+ //     return default_value;
+ //   }
+ //
+ //   const int parsed_value = strtol(str + 1, nullptr, 16);
+ //   const uint8_t red = (parsed_value >> 16) & 0xFF;
+ //   const uint8_t green = (parsed_value >> 8) & 0xFF;
+ //   const uint8_t blue = parsed_value & 0xFF;
+ //   return RgbColor(red, green, blue);
+ //  }
 
   // Attempts to parse `str` as a number in the interval `[min_value, max_value].
   // If it succeeds, returns the parsed value. If it fails, returns

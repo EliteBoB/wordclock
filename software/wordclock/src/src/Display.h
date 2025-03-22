@@ -6,7 +6,6 @@
 
 #include "BrightnessController.h"
 #include "ClockFace.h"
-#include "nodo.h"
 #include "Font.h"
 
 // The pin to control the matrix // Default pin 32
