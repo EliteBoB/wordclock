@@ -1,0 +1,2 @@
+#define NEOPIXEL_PIN 13  // GPIO Pin that LED strip DIN (green wire) is connected to - Use a GPIO with SPI
+#define LDR_PIN 1 // GPIO Pin that LDR is connected to - Use a GPIO in the ADC1 Group

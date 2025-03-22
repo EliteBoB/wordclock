@@ -50,20 +50,19 @@ uint16_t ClockFace::map(int16_t x, int16_t y)
   }
 }
 
-//uint16_t ClockFace::mapMinute(Corners corner)
-//{
-// switch (_position)
-//  {
-//  case LightSensorPosition::Bottom:
-//    return (static_cast<uint16_t>(corner) + 2) % 4;
-//  case LightSensorPosition::Top:
-//    return static_cast<uint16_t>(corner);
-//#endif
-//  default:
-//    DCHECK(false, static_cast<int>(corner));
-//    return 0;
-//  }
-//}
+uint16_t ClockFace::mapMinute(Corners corner)
+{
+ switch (_position)
+  {
+  case LightSensorPosition::Bottom:
+    return (static_cast<uint16_t>(corner) + 2) % 4;
+  case LightSensorPosition::Top:
+    return static_cast<uint16_t>(corner);
+  default:
+    DCHECK(false, static_cast<int>(corner));
+    return 0;
+  }
+}
 
 // Lit a segment in updateState.
 void ClockFace::updateSegment(int x, int y, int length)
@@ -289,19 +288,19 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
     DLOGLN(minute);
   }
 
-  //switch (leftover)
-  //{
-  //case 4:
-  //  _state[mapMinute(TopLeft)] = true;
-  //case 3: // fall through
-  //  _state[mapMinute(BottomLeft)] = true;
-  //case 2: // fall through
-  //  _state[mapMinute(BottomRight)] = true;
-  //case 1: // fall through
-  //  _state[mapMinute(TopRight)] = true;
-  //case 0: // fall through
-  //  break;
-  //}
+  switch (leftover)
+  {
+  case 4:
+    _state[mapMinute(TopLeft)] = true;
+  case 3: // fall through
+    _state[mapMinute(BottomLeft)] = true;
+  case 2: // fall through
+    _state[mapMinute(BottomRight)] = true;
+  case 1: // fall through
+    _state[mapMinute(TopRight)] = true;
+  case 0: // fall through
+    break;
+  }
   return true;
 }
 
@@ -329,38 +328,37 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
 #define EN_S_IT 0, 0, 2
 #define EN_S_IS 3, 0, 2
 
-#define EN_H_ONE 8, 9, 3
-#define EN_H_TWO 9, 7, 3
-#define EN_H_THREE 3, 9, 5
-#define EN_H_FOUR 7, 5, 4
-#define EN_H_FIVE 4, 7, 4
-#define EN_H_SIX 0, 9, 3
-#define EN_H_SEVEN 0, 6, 5
-#define EN_H_EIGHT 0, 8, 5
-#define EN_H_NINE 0, 7, 4
-#define EN_H_TEN 0, 10, 3
-#define EN_H_ELEVEN 6, 8, 6
-#define EN_H_TWELVE 6, 6, 6
+#define EN_H_ONE 0, 5, 3
+#define EN_H_TWO 8, 6, 3
+#define EN_H_THREE 6, 5, 5
+#define EN_H_FOUR 0, 6, 4
+#define EN_H_FIVE 4, 6, 4
+#define EN_H_SIX 3, 5, 3
+#define EN_H_SEVEN 0, 8, 5
+#define EN_H_EIGHT 0, 7, 5
+#define EN_H_NINE 7, 4, 4
+#define EN_H_TEN 0, 9, 3
+#define EN_H_ELEVEN 5, 7, 6
+#define EN_H_TWELVE 5, 8, 6
 
-#define EN_H_AM 10, 0, 0
+#define EN_H_AM 7, 0, 2
 #define EN_H_PM 9, 0, 2
 
 #define EN_M_A 0, 1, 1
-#define EN_M_PAST 0, 5, 4
-#define EN_M_TO 3, 5, 2
+#define EN_M_PAST 0, 4, 4
+#define EN_M_TO 9, 3, 2
 
-#define EN_M_TEN 7, 3, 3
-#define EN_M_FIFTEEN 2, 1, 7
+#define EN_M_TEN 5, 3, 3
+#define EN_M_QUARTER 2, 1, 7
 #define EN_M_TWENTY 0, 2, 6
 #define EN_M_TWENTYFIVE 0, 2, 10
 #define EN_M_FIVE 6, 2, 4
-#define EN_M_THIRTY 0, 3, 6
-#define EN_M_MINUTES 0, 4, 7
-// #define EN_M_QUART 0, 9, 5
-// #define EN_M_QUARTS 0, 9, 6
+#define EN_M_HALF 0, 3, 4
+#define EN_M_QUART 0, 9, 5
+#define EN_M_QUARTS 0, 9, 6
 
-#define EN_M_OCLOCK 6, 10, 6
-
+#define EN_M_MINUTES 0 ,4, 7
+#define EN_M_OCLOCK 5, 9, 7
 bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_ampm)
 {
   if (hour == _hour && minute == _minute && show_ampm == _show_ampm)
@@ -384,17 +382,17 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
   updateSegment(EN_S_IT);
   updateSegment(EN_S_IS);
 
-  // (show_ampm)
-  //
-  //if (hour < 12) // Midday is PM 
-  //{
-  //  updateSegment(EN_H_AM);
-  //}
-  //else
-  //{
-  //  updateSegment(EN_H_PM);
-  //}
-  //
+  if (show_ampm)
+  {
+    if (hour < 12) // Midday is PM 
+    {
+      updateSegment(EN_H_AM);
+    }
+    else
+    {
+      updateSegment(EN_H_PM);
+    }
+  }
 
   switch (hour)
   {
@@ -469,8 +467,8 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     updateSegment(EN_M_PAST);
     break;
   case 15:
-    updateSegment(EN_M_FIFTEEN);
-    updateSegment(EN_M_MINUTES);
+    updateSegment(EN_M_A);  
+    updateSegment(EN_M_QUARTER);
     updateSegment(EN_M_PAST);
     break;
   case 20:
@@ -484,8 +482,7 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     updateSegment(EN_M_PAST);
     break;
   case 30:
-    updateSegment(EN_M_THIRTY);
-    updateSegment(EN_M_MINUTES);
+    updateSegment(EN_M_HALF);
     updateSegment(EN_M_PAST);
     break;
   case 35:
@@ -499,8 +496,8 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     updateSegment(EN_M_TO);
     break;
   case 45:
-    updateSegment(EN_M_FIFTEEN);
-    updateSegment(EN_M_MINUTES);
+    updateSegment(EN_M_A);
+    updateSegment(EN_M_QUARTER);
     updateSegment(EN_M_TO);
     break;
   case 50:
@@ -518,19 +515,19 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     DLOGLN(minute);
   }
 
- // switch (leftover)
- // {
- // case 4:
- //   _state[mapMinute(TopLeft)] = true;
- // case 3: // fall through
- //   _state[mapMinute(BottomLeft)] = true;
- // case 2: // fall through
- //   _state[mapMinute(BottomRight)] = true;
- // case 1: // fall through
- //   _state[mapMinute(TopRight)] = true;
- // case 0: // fall through
- //   break;
- // }
+  switch (leftover)
+  {
+  case 4:
+    _state[mapMinute(TopLeft)] = true;
+  case 3: // fall through
+    _state[mapMinute(BottomLeft)] = true;
+  case 2: // fall through
+    _state[mapMinute(BottomRight)] = true;
+  case 1: // fall through
+    _state[mapMinute(TopRight)] = true;
+  case 0: // fall through
+    break;
+  }
   return true;
 }
 
@@ -717,19 +714,19 @@ bool DutchClockFace::stateForTime(int hour, int minute, int second,
     DLOGLN(minute);
   }
 
- // switch (leftover)
- // {
- // case 4:
- //   _state[mapMinute(TopLeft)] = true;
- //  case 3: // fall through
- //    _state[mapMinute(BottomLeft)] = true;
- // case 2: // fall through
- //   _state[mapMinute(BottomRight)] = true;
- // case 1: // fall through
- //   _state[mapMinute(TopRight)] = true;
- // case 0: // fall through
- //   break;
- // }
+  switch (leftover)
+  {
+  case 4:
+    _state[mapMinute(TopLeft)] = true;
+   case 3: // fall through
+     _state[mapMinute(BottomLeft)] = true;
+  case 2: // fall through
+    _state[mapMinute(BottomRight)] = true;
+  case 1: // fall through
+    _state[mapMinute(TopRight)] = true;
+  case 0: // fall through
+    break;
+  }
   return true;
 }
 
@@ -931,18 +928,18 @@ case 0:
     DLOGLN(minute);
   }
 
- // switch (leftover)
- // {
- // case 4:
- //   _state[mapMinute(TopLeft)] = true;
- // case 3: // fall through
- //   _state[mapMinute(BottomLeft)] = true;
- // case 2: // fall through
- //   _state[mapMinute(BottomRight)] = true;
- // case 1: // fall through
- //   _state[mapMinute(TopRight)] = true;
- // case 0: // fall through
- //   break;
- // }
+  switch (leftover)
+  {
+  case 4:
+    _state[mapMinute(TopLeft)] = true;
+  case 3: // fall through
+    _state[mapMinute(BottomLeft)] = true;
+  case 2: // fall through
+    _state[mapMinute(BottomRight)] = true;
+  case 1: // fall through
+    _state[mapMinute(TopRight)] = true;
+  case 0: // fall through
+    break;
+  }
   return true;
 }

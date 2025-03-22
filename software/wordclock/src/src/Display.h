@@ -7,12 +7,8 @@
 #include "BrightnessController.h"
 #include "ClockFace.h"
 #include "Font.h"
+#include "pins.h"
 
-// The pin to control the matrix // Default pin 32
-#ifndef NEOPIXEL_PIN
-#define NEOPIXEL_PIN 13
-#endif
-//
 #define TIME_CHANGE_ANIMATION_SPEED 400
 
 class Display
