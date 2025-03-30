@@ -124,9 +124,9 @@ void Display::updateForTime(int hour, int minute, int second, int animationSpeed
 
 void Display::_circle(uint16_t x, uint16_t y, int radius, RgbColor color)
 {
-  for (int i = 0; i < 12; i++)
+  for (int i = 0; i < 11; i++)
   {
-    for (int j = 0; j < 11; j++) {
+    for (int j = 0; j < 10; j++) {
       double distance = _distance(i, j, x, y);
       if (distance < radius && distance > radius - 2)
       {

@@ -18,6 +18,7 @@
 #include "src/Display.h"
 #include "src/ClockFace.h"
 #include "src/Iot.h"
+#include "src/pins.h"
 RTC_DS3231 rtc;
 boolean rtc_found = false;
 
