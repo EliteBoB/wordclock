@@ -3,13 +3,13 @@
 #include <IotWebConf.h>
 #include <NeoPixelAnimator.h>
 #include <NeoPixelBrightnessBus.h>
-
 #include "BrightnessController.h"
 #include "ClockFace.h"
 #include "Font.h"
 #include "pins.h"
 
 #define TIME_CHANGE_ANIMATION_SPEED 400
+static const RgbColor black = RgbColor(0x00, 0x00, 0x00);
 
 class Display
 {
@@ -21,7 +21,6 @@ public:
   void setColor(const RgbColor &color);
   RgbColor getColor() { return _brightnessController.getOriginalColor(); };
   void setClockFace(ClockFace* clockface);
-  void runBootAnimation();
 
   // Sets the sensor sentivity of the brightness controller.
   void setSensorSentivity(int value) { _brightnessController.setSensorSensitivity(value); }
@@ -50,6 +49,11 @@ public:
     TICKER
   };
   Mode getMode() { return _mode; }
+
+  void setColorRandValue(bool value); // Declare the setter method
+  void setHourlyAnimationValue(bool value); // Declare the setter method
+  void playHourlyAnimation(); // Declare the hourly animation method
+  void runBootAnimation();
 
 private:
   // Updates pixel color on the display.
@@ -99,4 +103,15 @@ private:
   void _fadeAll(uint8_t darkenBy);
   void _fadeAnimUpdate(const AnimationParam &param);
   void _displayCharacter(FontTable fontTable, char character, int scrollPosition, RgbColor color);
+
+  bool color_rand_value_ = false; // Add this member variable
+  bool hourly_animation_value_ = false; // Add this member variable
+
+  void hourlyAnimationFlash();
+  void hourlyAnimationRainbow();
+  void hourlyAnimationWave();
+  void hourlyAnimationSparkle();
+  void hourlyAnimationChasingLights();
+  void hourlyAnimationExpandingCircle();
 };
+

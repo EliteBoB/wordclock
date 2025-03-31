@@ -128,30 +128,6 @@ namespace
     return RgbColor(red, green, blue);
   } 
   
- // {
- //   bool has_error = str[0] != '#' || str[7] != 0;
- //   for (int i = 1; i <= 6; i++)
- //   {
- //     has_error &= !isxdigit(str[i]);
- //   }
- //   if (has_error)
- //   {
- //     DLOG("[INFO] Could not parse color value \"");
- //     DLOG(str);
- //     DLOGLN("\".");
- //     return default_value;
- //   }
- //
- //   const int parsed_value = strtol(str + 1, nullptr, 16);
- //   const uint8_t red = (parsed_value >> 16) & 0xFF;
- //   const uint8_t green = (parsed_value >> 8) & 0xFF;
- //   const uint8_t blue = parsed_value & 0xFF;
- //   return RgbColor(red, green, blue);
- //  }
-
-  // Attempts to parse `str` as a number in the interval `[min_value, max_value].
-  // If it succeeds, returns the parsed value. If it fails, returns
-  // `default_value`.
   int parseNumberValue(const char *str, int min_value, int max_value,
                        int default_value)
   {
@@ -222,11 +198,16 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
       ldr_sensitivity_param_(
           "Light sensor sensitivity", "ldr_sensitivity", ldr_sensitivity_value_,
           IOT_CONFIG_VALUE_LENGTH, "5", 0, 10, 1, "data-labels='Off'"),
-      color_param_("Color", "color", color_value_,
+      color_param_("Colour", "color", color_value_,
                    IOT_CONFIG_VALUE_LENGTH, "#FFFFFF", "#RRGGBB",
                    "data-type='color' pattern='#[0-9a-fA-F]{6}' "
                    "style='border-width: 1px; padding: 1px;'"),
-
+      color_rand_param_(
+           "Random Colour", "random", color_rand_value_,
+            IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On' data-controlledby='clockface_language' data-showon='0'"),
+      hourly_animation_param_(
+          "Hourly Animation", "hourlyAnimation", hourly_animation_value_,
+          IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On' data-controlledby='clockface_language' data-showon='0'"),
       time_group_("time_group", "Time"),
       ntp_enabled_param_(
           "Use network time (requires WiFi)", "ntp_enabled", ntp_enabled_value_,
@@ -256,6 +237,8 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
   this->show_ampm_value_[0] = '\0';
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
+  this->color_rand_value_[0] = '\0';
+  this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
   this->api_enabled_value_[0] = '\0';
@@ -305,9 +288,11 @@ void Iot::updateClockFromParams_()
     break;
   }
   }
-
+  display_->setColorRandValue(parseBooleanValue(color_rand_value_));
   display_->setColor(
       parseColorValue(color_value_, RgbColor(255, 255, 255)));
+   
+  display_->setHourlyAnimationValue(parseBooleanValue(hourly_animation_value_));    
   display_->setShowAmPm(parseBooleanValue(show_ampm_value_));
   display_->setSensorSentivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
   
@@ -337,6 +322,8 @@ void Iot::setup()
   this->show_ampm_value_[0] = '\0';
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
+  this->color_rand_value_[0] = '\0';
+  this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
   this->api_enabled_value_[0] = '\0';
@@ -356,8 +343,9 @@ void Iot::setup()
   display_group_.addItem(&show_ampm_param_);
   display_group_.addItem(&ldr_sensitivity_param_);
   display_group_.addItem(&color_param_);
+  display_group_.addItem(&color_rand_param_);
+  display_group_.addItem(&hourly_animation_param_);
   iot_web_conf_.addParameterGroup(&display_group_);
-
   time_group_.addItem(&ntp_enabled_param_);
   time_group_.addItem(&timezone_param_);
   time_group_.addItem(&manual_time_param_);

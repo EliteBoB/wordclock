@@ -35,11 +35,11 @@ namespace Palette
     }
 
     // Function to get color by index
-    RgbColor getColor(size_t index) {
+    inline RgbColor getColor(size_t index) {
         if (index < size()) {
             return COLOR_LOOKUP_TABLE[index];
         }
-        return RgbColor(0, 0, 0);  // Return black if index is out of bounds
+        return RgbColor(0, 0, 0); // Default to black if index is out of bounds
     }
 
     static std::vector<RgbColor> stringToRgb(String payload, RgbColor defaultColor)

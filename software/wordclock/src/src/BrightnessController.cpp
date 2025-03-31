@@ -1,6 +1,6 @@
 #include "BrightnessController.h"
 
-#define MIN_DIM 20
+#define MIN_DIM 80
 
 BrightnessController::BrightnessController() {}
 

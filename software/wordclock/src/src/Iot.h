@@ -139,6 +139,16 @@ private:
   // Value of the color parameter.
   char color_value_[IOT_CONFIG_VALUE_LENGTH];
 
+  // Select random colour for clockface
+  IotRangeValueParameter color_rand_param_;
+  // Value of the random colour option
+  char color_rand_value_[IOT_CONFIG_VALUE_LENGTH];
+
+  // Select animation to be played on the hour
+  IotRangeValueParameter hourly_animation_param_;
+  // Value of the animation option
+  char hourly_animation_value_[IOT_CONFIG_VALUE_LENGTH];
+
   // Enables NTP time setting.
   IotRangeValueParameter ntp_enabled_param_;
   // Value of the NTP setting option.

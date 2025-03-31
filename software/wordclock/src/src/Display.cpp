@@ -1,8 +1,12 @@
 #include "logging.h"
 #include "Display.h"
 #include "ClockFace.h"
+#include "Palette.h"
+#include "Iot.h"
 
-static const RgbColor black = RgbColor(0x00, 0x00, 0x00);
+
+// Forward declaration of the helper function
+String rgbColorToString(const RgbColor& color);
 
 Display::Display(ClockFace* clockFace, uint8_t pin)
     : _clockFace(clockFace),
@@ -12,9 +16,12 @@ Display::Display(ClockFace* clockFace, uint8_t pin)
 
 void Display::setup()
 {
-  _mode = CLOCK;
-  _pixels.Begin();
-  _brightnessController.setup();
+    _mode = CLOCK;
+    _pixels.Begin();
+    _brightnessController.setup();
+
+    // Seed the random number generator
+    srand(millis());
 }
 
 void Display::loop()
@@ -70,6 +77,18 @@ void Display::setColor(const RgbColor &color)
   _brightnessController.setOriginalColor(color);
 }
 
+void Display::setColorRandValue(bool value) {
+    DLOG("Setting color_rand_value_ to: ");
+    DLOGLN(value);
+    color_rand_value_ = value;
+}
+
+void Display::setHourlyAnimationValue(bool value) {
+    DLOG("Setting hourly_animation_value_ to: ");
+    DLOGLN(value);
+    hourly_animation_value_ = value;
+}
+
 void Display::setOff()
 {
   _off = true;
@@ -88,14 +107,29 @@ void Display::_update(int animationSpeed)
 
   _animations.StopAll();
 
-  // For all the LED animate a change from the current visible state to the new
-  // one.
+  RgbColor randomColor = _brightnessController.getCorrectedColor();
+
+  // If random color is enabled, choose a new random color excluding black
+  if (color_rand_value_)
+  {
+    int paletteSize = Palette::size(); // Assuming Palette has a size() function.
+    if (paletteSize > 0)
+    {
+      do
+      {
+        int randomIndex = rand() % paletteSize; // Generate a random index
+        randomColor = Palette::getColor(randomIndex); // Get a random color
+      } while (randomColor == RgbColor(0, 0, 0)); // Exclude black color
+    }
+  }
+
+  // For all the LEDs, animate a change from the current visible state to the new one
   const std::vector<bool> &state = _clockFace->getState();
 
   for (int index = 0; index < state.size(); index++)
   {
     RgbColor originalColor = _pixels.GetPixelColor(index);
-    RgbColor targetColor = _off ? black : (state[index] ? _brightnessController.getCorrectedColor() : black);
+    RgbColor targetColor = _off ? black : (state[index] ? randomColor : black);
 
     AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
       float progress = NeoEase::QuadraticIn(param.progress);
@@ -109,17 +143,25 @@ void Display::_update(int animationSpeed)
 
 void Display::updateForTime(int hour, int minute, int second, int animationSpeed)
 {
-  if (_mode != CLOCK || !_clockFace->stateForTime(hour, minute, second, _show_ampm))
-  {
-    return; // Nothing to update.
-  }
+    static int lastHour = -1;
 
-  DLOG("Time: ");
-  DLOG(hour);
-  DLOG(":");
-  DLOGLN(minute);
+    if (_mode != CLOCK || !_clockFace->stateForTime(hour, minute, second, _show_ampm))
+    {
+        return; // Nothing to update.
+    }
 
-  _update(animationSpeed);
+    DLOG("Time: ");
+    DLOG(hour);
+    DLOG(":");
+    DLOGLN(minute);
+
+    // Check if the hour has changed
+    if (hour != lastHour && hourly_animation_value_) {
+        playHourlyAnimation(); // Play the hourly animation
+    }
+
+    lastHour = hour; // Update the last hour
+    _update(animationSpeed);
 }
 
 void Display::_circle(uint16_t x, uint16_t y, int radius, RgbColor color)
@@ -303,4 +345,124 @@ void Display::scrollText(IotWebConf &iwc, String text, RgbColor textColor, int s
   _mode = CLOCK;
   DLOGLN("Ticker exited");
   _update();
+}
+
+void Display::hourlyAnimationFlash()
+{
+  for (int i = 0; i < 3; i++) {
+    RgbColor randomColor = RgbColor(rand() % 256, rand() % 256, rand() % 256); // Generate random color
+    _pixels.ClearTo(randomColor); // Use the random color
+    _pixels.Show();
+    delay(500);
+
+    _pixels.ClearTo(black); // Turn off
+    _pixels.Show();
+    delay(500);
+    }
+}
+
+void Display::hourlyAnimationRainbow()
+{
+    for (int cycle = 0; cycle < 3; cycle++) {
+        for (int hue = 0; hue < 360; hue += 10) {
+            RgbColor color = HslColor(hue / 360.0f, 1.0f, 0.5f);
+            _pixels.ClearTo(color);
+            _pixels.Show();
+            delay(50);
+        }
+    }
+}
+
+void Display::hourlyAnimationWave()
+{
+    for (int wave = 0; wave < 10; wave++) {
+        for (int i = 0; i < _pixels.PixelCount(); i++) {
+            RgbColor color = (i % 2 == wave % 2) ? RgbColor(rand() % 256, rand() % 256, rand() % 256) : black;
+            _pixels.SetPixelColor(i, color);
+        }
+        _pixels.Show();
+        delay(200);
+    }
+}
+
+void Display::hourlyAnimationSparkle()
+{
+    for (int i = 0; i < 50; i++) {
+        int randomPixel = rand() % _pixels.PixelCount();
+        _pixels.SetPixelColor(randomPixel, RgbColor(255, 255, 255));
+        _pixels.Show();
+        delay(50);
+
+        _pixels.SetPixelColor(randomPixel, black);
+        _pixels.Show();
+    }
+}
+
+void Display::hourlyAnimationChasingLights()
+{
+    for (int i = 0; i < _pixels.PixelCount() * 1; i++) { // one cycle
+        for (int j = 0; j < _pixels.PixelCount(); j++) {
+            RgbColor color = (j == i % _pixels.PixelCount()) ? RgbColor(rand() % 256, rand() % 256, rand() % 256) : black; 
+            _pixels.SetPixelColor(j, color);
+        }
+        _pixels.Show();
+        delay(100);
+    }
+}
+
+void Display::hourlyAnimationExpandingCircle()
+{
+  {
+      RgbColor randomColor = RgbColor(rand() % 256, rand() % 256, rand() % 256); // Generate random color
+      for (int radius = 1; radius <= 10; radius++) { // Expand the circle
+          _circle(5, 5, radius, randomColor); // Use random color for the circle
+          _pixels.Show();
+          delay(100);
+      }
+  }
+}
+
+void Display::playHourlyAnimation()
+{
+    DLOGLN("Playing hourly animation");
+
+    // Generate a random number to pick an animation
+    int animationIndex = rand() % 6; // Adjust the range based on the number of animations
+
+    switch (animationIndex) {
+        case 0:
+            DLOGLN("Playing Flash Animation");
+            hourlyAnimationFlash();
+            break;
+        case 1:
+            DLOGLN("Playing Rainbow Animation");
+            hourlyAnimationRainbow();
+            break;
+        case 2:
+            DLOGLN("Playing Wave Animation");
+            hourlyAnimationWave();
+            break;
+        case 3:
+            DLOGLN("Playing Sparkle Animation");
+            hourlyAnimationSparkle();
+            break;
+        case 4:
+            DLOGLN("Playing Chasing Lights Animation");
+            hourlyAnimationChasingLights();
+            break;
+        case 5:
+            DLOGLN("Playing Expanding Circle Animation");
+            hourlyAnimationExpandingCircle();
+            break;            
+        default:
+            DLOGLN("Unknown animation index");
+            break;
+    }
+
+    // Restore the display to the current time
+    _update();
+}
+
+String rgbColorToString(const RgbColor& color) {
+    return "(" + String(color.R) + ", " + String(color.G) + ", " + String(color.B) + ")";
 }
