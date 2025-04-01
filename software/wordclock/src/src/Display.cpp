@@ -89,6 +89,12 @@ void Display::setHourlyAnimationValue(bool value) {
     hourly_animation_value_ = value;
 }
 
+void Display::setColorWaveValue(bool value) {
+    DLOG("Setting color_wave_value_ to: ");
+    DLOGLN(value);
+    color_wave_value_ = value;
+}
+
 void Display::setOff()
 {
   _off = true;
@@ -103,42 +109,65 @@ void Display::setOn()
 
 void Display::_update(int animationSpeed)
 {
-  DLOGLN("Updating display");
+    DLOGLN("Updating display");
 
-  _animations.StopAll();
+    _animations.StopAll();
 
-  RgbColor randomColor = _brightnessController.getCorrectedColor();
 
-  // If random color is enabled, choose a new random color excluding black
-  if (color_rand_value_)
-  {
-    int paletteSize = Palette::size(); // Assuming Palette has a size() function.
-    if (paletteSize > 0)
-    {
-      do
+
+if (color_wave_value_)
+   {
+    RgbColor randomColorWave = _brightnessController.getCorrectedColor();
+
+      int paletteSize = Palette::size(); // Assuming Palette has a size() function.
+      if (paletteSize > 0)
       {
-        int randomIndex = rand() % paletteSize; // Generate a random index
-        randomColor = Palette::getColor(randomIndex); // Get a random color
-      } while (randomColor == RgbColor(0, 0, 0)); // Exclude black color
+        do
+        {
+          int randomIndex = rand() % paletteSize; // Generate a random index
+          randomColorWave = Palette::getColor(randomIndex); // Get a random color
+        } while (randomColorWave == RgbColor(0, 0, 0)); // Exclude black color
+      }
+
+      const std::vector<bool> &state = _clockFace->getState();
+
+      for (int index = 0; index < state.size(); index++)
+      {
+          RgbColor originalColor = _pixels.GetPixelColor(index);
+          RgbColor targetColor = _off ? black : (state[index] ? randomColorWave : black);
+  
+          AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
+              float progress = NeoEase::QuadraticIn(param.progress);
+              RgbColor updatedColor = RgbColor::LinearBlend(
+                  originalColor, targetColor, progress);
+              _pixels.SetPixelColor(index, updatedColor);
+          };
+          _animations.StartAnimation(index, animationSpeed, animUpdate);
+      }
     }
-  }
+   
+else
+   { 
+    // Use the cached color
+    RgbColor randomColor = _cachedColor;
+    
+    // For all the LEDs, animate a change from the current visible state to the new one
+    const std::vector<bool> &state = _clockFace->getState();
 
-  // For all the LEDs, animate a change from the current visible state to the new one
-  const std::vector<bool> &state = _clockFace->getState();
+    for (int index = 0; index < state.size(); index++)
+    {
+        RgbColor originalColor = _pixels.GetPixelColor(index);
+        RgbColor targetColor = _off ? black : (state[index] ? randomColor : black);
 
-  for (int index = 0; index < state.size(); index++)
-  {
-    RgbColor originalColor = _pixels.GetPixelColor(index);
-    RgbColor targetColor = _off ? black : (state[index] ? randomColor : black);
-
-    AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
-      float progress = NeoEase::QuadraticIn(param.progress);
-      RgbColor updatedColor = RgbColor::LinearBlend(
-          originalColor, targetColor, progress);
-      _pixels.SetPixelColor(index, updatedColor);
-    };
-    _animations.StartAnimation(index, animationSpeed, animUpdate);
-  }
+        AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
+            float progress = NeoEase::QuadraticIn(param.progress);
+            RgbColor updatedColor = RgbColor::LinearBlend(
+                originalColor, targetColor, progress);
+            _pixels.SetPixelColor(index, updatedColor);
+        };
+        _animations.StartAnimation(index, animationSpeed, animUpdate);
+    }
+   }
 }
 
 void Display::updateForTime(int hour, int minute, int second, int animationSpeed)
@@ -158,6 +187,24 @@ void Display::updateForTime(int hour, int minute, int second, int animationSpeed
     // Check if the hour has changed
     if (hour != lastHour && hourly_animation_value_) {
         playHourlyAnimation(); // Play the hourly animation
+    }
+
+    // Update the cached color
+    if (color_rand_value_)
+    {
+        int paletteSize = Palette::size();
+        if (paletteSize > 0)
+        {
+            do
+            {
+                int randomIndex = rand() % paletteSize;
+                _cachedColor = Palette::getColor(randomIndex);
+            } while (_cachedColor == RgbColor(0, 0, 0)); // Exclude black
+        }
+    }
+    else
+    {
+        _cachedColor = _brightnessController.getCorrectedColor();
     }
 
     lastHour = hour; // Update the last hour

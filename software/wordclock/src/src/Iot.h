@@ -144,6 +144,11 @@ private:
   // Value of the random colour option
   char color_rand_value_[IOT_CONFIG_VALUE_LENGTH];
 
+  // Select colour wave for clockface
+  IotRangeValueParameter color_wave_param_; 
+  // Value of the colour wave option
+  char color_wave_value_[IOT_CONFIG_VALUE_LENGTH];
+
   // Select animation to be played on the hour
   IotRangeValueParameter hourly_animation_param_;
   // Value of the animation option

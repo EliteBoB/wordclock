@@ -171,14 +171,14 @@ document.addEventListener(
 
         // Show/hide fields based on others.
         document.querySelectorAll("[data-controlledby]").forEach((controlledEl) => {
-          const controllerEl = document.getElementById(controlledEl.getAttribute('data-controlledby'));
-          const showValues = controlledEl.getAttribute('data-showon').split('|');
-          const apply = () => {
-            controlledEl.parentElement.style.display = showValues.indexOf(controllerEl.value + "") < 0 ? 'none' : '';
-          };
-          controllerEl.addEventListener('change', apply);
-          apply();
-        });
+            const controllerEl = document.getElementById(controlledEl.getAttribute('data-controlledby'));
+            const showValues = controlledEl.getAttribute('data-showon').split('|');
+            const apply = () => {
+              controlledEl.parentElement.style.display = showValues.indexOf(controllerEl.value + "") < 0 ? 'none' : '';
+            };
+            controllerEl.addEventListener('change', apply);
+            apply();
+          });
 
         // Apply the selected color to the clock logo :)
         const colorInputEl = document.querySelector('input[type=color]');

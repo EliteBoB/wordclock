@@ -54,6 +54,7 @@ public:
   void setHourlyAnimationValue(bool value); // Declare the setter method
   void playHourlyAnimation(); // Declare the hourly animation method
   void runBootAnimation();
+  void setColorWaveValue(bool value); // Declare the setter method
 
 private:
   // Updates pixel color on the display.
@@ -70,6 +71,8 @@ private:
   Mode _mode;
   std::vector<RgbColor> _matrix_buf;
   
+  RgbColor _cachedColor = black; // Cached color for updates
+
   // Whether the display should show AM/PM information.
   bool _show_ampm = 0;
 
@@ -106,6 +109,7 @@ private:
 
   bool color_rand_value_ = false; // Add this member variable
   bool hourly_animation_value_ = false; // Add this member variable
+  bool color_wave_value_ = false; // Add this member variable
 
   void hourlyAnimationFlash();
   void hourlyAnimationRainbow();

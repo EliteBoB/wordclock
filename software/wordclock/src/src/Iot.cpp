@@ -203,11 +203,14 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
                    "data-type='color' pattern='#[0-9a-fA-F]{6}' "
                    "style='border-width: 1px; padding: 1px;'"),
       color_rand_param_(
-           "Random Colour", "random", color_rand_value_,
-            IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On' data-controlledby='clockface_language' data-showon='0'"),
+           "Random Colour", "random_color", color_rand_value_,
+           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
+      color_wave_param_(
+           "Colour Wave", "color_wave", color_wave_value_,
+           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
       hourly_animation_param_(
           "Hourly Animation", "hourlyAnimation", hourly_animation_value_,
-          IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On' data-controlledby='clockface_language' data-showon='0'"),
+          IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
       time_group_("time_group", "Time"),
       ntp_enabled_param_(
           "Use network time (requires WiFi)", "ntp_enabled", ntp_enabled_value_,
@@ -238,6 +241,7 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
   this->color_rand_value_[0] = '\0';
+  this->color_wave_value_[0] = '\0';
   this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
@@ -291,7 +295,7 @@ void Iot::updateClockFromParams_()
   display_->setColorRandValue(parseBooleanValue(color_rand_value_));
   display_->setColor(
       parseColorValue(color_value_, RgbColor(255, 255, 255)));
-   
+  display_->setColorWaveValue(parseBooleanValue(color_wave_value_)); 
   display_->setHourlyAnimationValue(parseBooleanValue(hourly_animation_value_));    
   display_->setShowAmPm(parseBooleanValue(show_ampm_value_));
   display_->setSensorSentivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
@@ -323,6 +327,7 @@ void Iot::setup()
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
   this->color_rand_value_[0] = '\0';
+  this->color_wave_value_[0] = '\0';
   this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
@@ -345,6 +350,7 @@ void Iot::setup()
   display_group_.addItem(&color_param_);
   display_group_.addItem(&color_rand_param_);
   display_group_.addItem(&hourly_animation_param_);
+  display_group_.addItem(&color_wave_param_);
   iot_web_conf_.addParameterGroup(&display_group_);
   time_group_.addItem(&ntp_enabled_param_);
   time_group_.addItem(&timezone_param_);
