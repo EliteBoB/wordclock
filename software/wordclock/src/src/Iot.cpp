@@ -20,7 +20,7 @@
 #define INITIAL_WIFI_AP_PASSWORD "password"
 // IoT configuration version. Change this whenever IotWebConf object's
 // configuration structure changes.
-#define CONFIG_VERSION "6"
+#define CONFIG_VERSION "7"
 // Port used by the IotWebConf HTTP server.
 #define WEB_SERVER_PORT 80
 // Default timezone index from Timezones.h (Paris).
@@ -64,6 +64,8 @@ namespace
   // Custom HTML element will be added at the beginning of the body element.
   const char CUSTOMHTML_BODY_INNER[] PROGMEM = "<header><div class=\"logoContainer\"><img class=\"logo\" src=\"logo.svg\"/></div></header><aside>Firmware version " AUTO_VERSION "</aside>\n";
 
+  const char TOGGLE_COLOR_PICKER_SCRIPT[] PROGMEM = "<script>\nfunction toggleColorPicker() {\n  var colorMode = document.getElementById('colorMode').value;\n  var colorPicker = document.getElementById('color');\n  if (colorPicker) {\n    colorPicker.parentElement.style.display = (colorMode == '0') ? 'block' : 'none';\n  }\n}\nwindow.addEventListener('DOMContentLoaded', function() {\n  toggleColorPicker();\n  var colorMode = document.getElementById('colorMode');\n  if (colorMode) {\n    colorMode.addEventListener('change', toggleColorPicker);\n  }\n});\n</script>";
+
   class CustomHtmlFormatProvider : public iotwebconf::HtmlFormatProvider
   {
   protected:
@@ -71,7 +73,7 @@ namespace
     {
       String head = iotwebconf::HtmlFormatProvider::getHead();
       head.replace("{v}", THING_NAME);
-      return head + String(FPSTR(CUSTOM_HTML_META));
+      return head + String(FPSTR(CUSTOM_HTML_META)) + String(FPSTR(TOGGLE_COLOR_PICKER_SCRIPT));
     }
     String getScriptInner() override
     {
@@ -198,16 +200,14 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
       ldr_sensitivity_param_(
           "Light sensor sensitivity", "ldr_sensitivity", ldr_sensitivity_value_,
           IOT_CONFIG_VALUE_LENGTH, "5", 0, 10, 1, "data-labels='Off'"),
-      color_param_("Colour", "color", color_value_,
-                   IOT_CONFIG_VALUE_LENGTH, "#FFFFFF", "#RRGGBB",
-                   "data-type='color' pattern='#[0-9a-fA-F]{6}' "
-                   "style='border-width: 1px; padding: 1px;'"),
-      color_rand_param_(
-           "Random Colour", "random_color", color_rand_value_,
-           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
-      color_wave_param_(
-           "Colour Wave", "color_wave", color_wave_value_,
-           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
+      color_param_(
+          "", "color", color_value_,
+          IOT_CONFIG_VALUE_LENGTH, "#FFFFFF", "#RRGGBB",
+          "data-type='color' pattern='#[0-9a-fA-F]{6}' "
+          "style='width: 128px; height: 32px; border: 1; background: none; padding: 0; margin: 0; appearance: auto;'"),
+      color_mode_param_(
+          "Colour Mode", "colorMode", color_mode_value_,
+          IOT_CONFIG_VALUE_LENGTH, "0", 0, 2, 1, "data-options='Colour|Random Colour|Colour Wave'"),
       hourly_animation_param_(
           "Hourly Animation", "hourlyAnimation", hourly_animation_value_,
           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
@@ -240,8 +240,7 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
   this->show_ampm_value_[0] = '\0';
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
-  this->color_rand_value_[0] = '\0';
-  this->color_wave_value_[0] = '\0';
+  this->color_mode_value_[0] = '\0';
   this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
@@ -292,10 +291,30 @@ void Iot::updateClockFromParams_()
     break;
   }
   }
-  display_->setColorRandValue(parseBooleanValue(color_rand_value_));
-  display_->setColor(
-      parseColorValue(color_value_, RgbColor(255, 255, 255)));
-  display_->setColorWaveValue(parseBooleanValue(color_wave_value_)); 
+
+  switch (parseNumberValue(color_mode_value_, 0, 2, 0))
+  {
+  case 1:
+  {
+    display_->setColorRandValue(true);
+    display_->setColorWaveValue(false);
+    break;
+  }
+  case 2:
+  {
+    display_->setColorWaveValue(true);
+    display_->setColorRandValue(false);
+    break;
+  }
+  default:
+  {
+    display_->setColorRandValue(false);
+    display_->setColorWaveValue(false);
+    display_->setColor(parseColorValue(color_value_, RgbColor(255, 255, 255)));
+    break;
+  }
+  }
+
   display_->setHourlyAnimationValue(parseBooleanValue(hourly_animation_value_));    
   display_->setShowAmPm(parseBooleanValue(show_ampm_value_));
   display_->setSensorSentivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
@@ -326,8 +345,7 @@ void Iot::setup()
   this->show_ampm_value_[0] = '\0';
   this->ldr_sensitivity_value_[0] = '\0';
   this->color_value_[0] = '\0';
-  this->color_rand_value_[0] = '\0';
-  this->color_wave_value_[0] = '\0';
+  this->color_mode_value_[0] = '\0';
   this->hourly_animation_value_[0] = '\0';
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
@@ -347,10 +365,9 @@ void Iot::setup()
   display_group_.addItem(&clockface_language_param_);
   display_group_.addItem(&show_ampm_param_);
   display_group_.addItem(&ldr_sensitivity_param_);
+  display_group_.addItem(&color_mode_param_);
   display_group_.addItem(&color_param_);
-  display_group_.addItem(&color_rand_param_);
   display_group_.addItem(&hourly_animation_param_);
-  display_group_.addItem(&color_wave_param_);
   iot_web_conf_.addParameterGroup(&display_group_);
   time_group_.addItem(&ntp_enabled_param_);
   time_group_.addItem(&timezone_param_);

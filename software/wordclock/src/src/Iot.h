@@ -134,20 +134,15 @@ private:
   // Value of the LDR sensitivity parameter.
   char ldr_sensitivity_value_[IOT_CONFIG_VALUE_LENGTH];
 
+  // Colour mode list box
+  IotRangeValueParameter color_mode_param_;
+  // Value of the color mode parameter.
+  char color_mode_value_[IOT_CONFIG_VALUE_LENGTH];
+
   // Text color parameter.
   iotwebconf::TextParameter color_param_;
   // Value of the color parameter.
   char color_value_[IOT_CONFIG_VALUE_LENGTH];
-
-  // Select random colour for clockface
-  IotRangeValueParameter color_rand_param_;
-  // Value of the random colour option
-  char color_rand_value_[IOT_CONFIG_VALUE_LENGTH];
-
-  // Select colour wave for clockface
-  IotRangeValueParameter color_wave_param_; 
-  // Value of the colour wave option
-  char color_wave_value_[IOT_CONFIG_VALUE_LENGTH];
 
   // Select animation to be played on the hour
   IotRangeValueParameter hourly_animation_param_;
