@@ -26,42 +26,52 @@ void Display::setup()
 
 void Display::loop()
 {
-  if (_mode == TICKER) {
-    return;
-  }
-  if (_bootAnimations.IsAnimating()) {
-    _bootAnimations.UpdateAnimations();
-  } else if (_mode == MATRIX) {
-      if (_matrix_buf.size() >= NEOPIXEL_COLUMNS * NEOPIXEL_ROWS) {
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopLeft), black);
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopRight), black); 
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomLeft), black); 
-        _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomRight), black);  
-        DLOGLN("Updating matrix from arbitray color vector");
-        uint16_t indexPixel = 0;
-        for (int j = 0; j < NEOPIXEL_ROWS; j++) {
-          {
-          for (int i = 0; i < NEOPIXEL_COLUMNS; i++)
-            {
-              if (_matrix_buf.size() >= indexPixel) {
-                _pixels.SetPixelColor(_clockFace->map(i, j), _matrix_buf[indexPixel]);
-              }
-              indexPixel++;
-            }
-          }
-        }
-        _matrix_buf.clear();
-      }
-  } else {
-    _animations.UpdateAnimations();
-    if (!_off && _brightnessController.hasChanged())
-    {
-      DLOGLN("Brightness has changed, updating");
-      _update(30); // Update in 300 ms
+    if (_mode == TICKER) {
+        return;
     }
-    _brightnessController.loop();
-  }
-  _pixels.Show();
+
+    if (_bootAnimations.IsAnimating()) {
+        _bootAnimations.UpdateAnimations();
+    } else if (_mode == MATRIX) {
+        if (_matrix_buf.size() >= NEOPIXEL_COLUMNS * NEOPIXEL_ROWS) {
+            _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopLeft), black);
+            _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::TopRight), black); 
+            _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomLeft), black); 
+            _pixels.SetPixelColor(_clockFace->mapMinute(ClockFace::BottomRight), black);  
+            DLOGLN("Updating matrix from arbitray color vector");
+            uint16_t indexPixel = 0;
+            for (int j = 0; j < NEOPIXEL_ROWS; j++) {
+                for (int i = 0; i < NEOPIXEL_COLUMNS; i++) {
+                    if (_matrix_buf.size() >= indexPixel) {
+                        _pixels.SetPixelColor(_clockFace->map(i, j), _matrix_buf[indexPixel]);
+                    }
+                    indexPixel++;
+                }
+            }
+            _matrix_buf.clear();
+        }
+    } else {
+        _animations.UpdateAnimations();
+
+        if (color_wave_value_) {
+            static unsigned long lastUpdate = 0;
+            unsigned long currentMillis = millis();
+
+            if (currentMillis - lastUpdate >= 800) { // Adjust timing as needed
+                _update(100); // Smooth transition with animation speed
+                lastUpdate = currentMillis;
+            }
+        }
+
+        if (!_off && _brightnessController.hasChanged()) {
+            DLOGLN("Brightness has changed, updating");
+            _update(30); // Update in 300 ms
+        }
+
+        _brightnessController.loop();
+    }
+
+    _pixels.Show();
 }
 
 void Display::setClockFace(ClockFace* clockface)
@@ -113,61 +123,59 @@ void Display::_update(int animationSpeed)
 
     _animations.StopAll();
 
-
-
-if (color_wave_value_)
-   {
-    RgbColor randomColorWave = _brightnessController.getCorrectedColor();
-
-      int paletteSize = Palette::size(); // Assuming Palette has a size() function.
-      if (paletteSize > 0)
-      {
-        do
-        {
-          int randomIndex = rand() % paletteSize; // Generate a random index
-          randomColorWave = Palette::getColor(randomIndex); // Get a random color
-        } while (randomColorWave == RgbColor(0, 0, 0)); // Exclude black color
-      }
-
-      const std::vector<bool> &state = _clockFace->getState();
-
-      for (int index = 0; index < state.size(); index++)
-      {
-          RgbColor originalColor = _pixels.GetPixelColor(index);
-          RgbColor targetColor = _off ? black : (state[index] ? randomColorWave : black);
-  
-          AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
-              float progress = NeoEase::QuadraticIn(param.progress);
-              RgbColor updatedColor = RgbColor::LinearBlend(
-                  originalColor, targetColor, progress);
-              _pixels.SetPixelColor(index, updatedColor);
-          };
-          _animations.StartAnimation(index, animationSpeed, animUpdate);
-      }
-    }
-   
-else
-   { 
-    // Use the cached color
-    RgbColor randomColor = _cachedColor;
-    
-    // For all the LEDs, animate a change from the current visible state to the new one
-    const std::vector<bool> &state = _clockFace->getState();
-
-    for (int index = 0; index < state.size(); index++)
+    if (color_wave_value_)
     {
-        RgbColor originalColor = _pixels.GetPixelColor(index);
-        RgbColor targetColor = _off ? black : (state[index] ? randomColor : black);
+        static int currentColorIndex = 0; // Keep track of the current color index
+        int paletteSize = Palette::size();
 
-        AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
-            float progress = NeoEase::QuadraticIn(param.progress);
-            RgbColor updatedColor = RgbColor::LinearBlend(
-                originalColor, targetColor, progress);
-            _pixels.SetPixelColor(index, updatedColor);
-        };
-        _animations.StartAnimation(index, animationSpeed, animUpdate);
+        if (paletteSize > 0)
+        {
+            do
+            {
+                currentColorIndex = (currentColorIndex + 1) % paletteSize; // Cycle through colors
+            } while (Palette::getColor(currentColorIndex) == RgbColor(0, 0, 0)); // Exclude black
+
+            RgbColor nextColor = Palette::getColor(currentColorIndex);
+
+            const std::vector<bool> &state = _clockFace->getState();
+
+            for (int index = 0; index < state.size(); index++)
+            {
+                RgbColor originalColor = _pixels.GetPixelColor(index);
+                RgbColor targetColor = _off ? black : (state[index] ? nextColor : black);
+
+                AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
+                    float progress = NeoEase::QuadraticInOut(param.progress);
+                    RgbColor updatedColor = RgbColor::LinearBlend(
+                        originalColor, targetColor, progress);
+                    _pixels.SetPixelColor(index, updatedColor);
+                };
+                _animations.StartAnimation(index, animationSpeed, animUpdate);
+            }
+        }
     }
-   }
+    else
+    {
+        // Use the cached color
+        RgbColor randomColor = _cachedColor;
+
+        // For all the LEDs, animate a change from the current visible state to the new one
+        const std::vector<bool> &state = _clockFace->getState();
+
+        for (int index = 0; index < state.size(); index++)
+        {
+            RgbColor originalColor = _pixels.GetPixelColor(index);
+            RgbColor targetColor = _off ? black : (state[index] ? randomColor : black);
+
+            AnimUpdateCallback animUpdate = [=](const AnimationParam &param) {
+                float progress = NeoEase::QuadraticIn(param.progress);
+                RgbColor updatedColor = RgbColor::LinearBlend(
+                    originalColor, targetColor, progress);
+                _pixels.SetPixelColor(index, updatedColor);
+            };
+            _animations.StartAnimation(index, animationSpeed, animUpdate);
+        }
+    }
 }
 
 void Display::updateForTime(int hour, int minute, int second, int animationSpeed)
