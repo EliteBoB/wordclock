@@ -169,6 +169,10 @@ private:
   // Value of the API setting option.
   char api_enabled_value_[IOT_CONFIG_VALUE_LENGTH];
 
+  // API text input parameter and value
+  iotwebconf::TextParameter api_text_param_;
+  char api_text_value_[IOT_CONFIG_VALUE_LENGTH];
+
   // Enables MQTT client.
   IotRangeValueParameter mqtt_enabled_param_;
   // Value of the MQTT setting option.

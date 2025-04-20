@@ -66,6 +66,29 @@ namespace
 
   const char TOGGLE_COLOR_PICKER_SCRIPT[] PROGMEM = "<script>\nfunction toggleColorPicker() {\n  var colorMode = document.getElementById('colorMode').value;\n  var colorPicker = document.getElementById('color');\n  if (colorPicker) {\n    colorPicker.parentElement.style.display = (colorMode == '0') ? 'block' : 'none';\n  }\n}\nwindow.addEventListener('DOMContentLoaded', function() {\n  toggleColorPicker();\n  var colorMode = document.getElementById('colorMode');\n  if (colorMode) {\n    colorMode.addEventListener('change', toggleColorPicker);\n  }\n});\n</script>";
 
+  const char API_SEND_BUTTON_SCRIPT[] PROGMEM = R"(<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var apiEnabled = document.getElementById('api_enabled');
+  var apiText = document.getElementById('api_text');
+  if (apiText) {
+    var sendBtn = document.createElement('button');
+    sendBtn.textContent = 'Send';
+    sendBtn.type = 'button';
+    sendBtn.style.display = 'block';
+    sendBtn.style.marginTop = '8px';
+    apiText.parentElement.appendChild(sendBtn);
+    sendBtn.onclick = function() {
+      var text = apiText.value;
+      var encoded = encodeURIComponent(text);
+      fetch('/api/text/set/' + encoded)
+        .then(r => r.text())
+        .then(alert)
+        .catch(alert);
+    };
+  }
+});
+</script>)";
+
   class CustomHtmlFormatProvider : public iotwebconf::HtmlFormatProvider
   {
   protected:
@@ -73,7 +96,7 @@ namespace
     {
       String head = iotwebconf::HtmlFormatProvider::getHead();
       head.replace("{v}", THING_NAME);
-      return head + String(FPSTR(CUSTOM_HTML_META)) + String(FPSTR(TOGGLE_COLOR_PICKER_SCRIPT));
+      return head + String(FPSTR(CUSTOM_HTML_META)) + String(FPSTR(TOGGLE_COLOR_PICKER_SCRIPT)) + String(FPSTR(API_SEND_BUTTON_SCRIPT));
     }
     String getScriptInner() override
     {
@@ -225,6 +248,8 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
       api_enabled_param_(
           "Enable the (unsecure) API and <a href='/paint'>paint tool</a>", "api_enabled", api_enabled_value_,
           IOT_CONFIG_VALUE_LENGTH, "0", 0, 1, 1, "style='width: 40px;' data-labels='Off|On'"),
+      api_text_param_(
+          "Send text to the Clock", "api_text", api_text_value_, IOT_CONFIG_VALUE_LENGTH, nullptr, nullptr, "data-controlledby='api_enabled' data-showon='1'"),
  
       mqtt_group_("mqtt_group", "MQTT"),
       mqtt_enabled_param_(
@@ -245,6 +270,7 @@ Iot::Iot(Display *display, RTC_DS3231 *rtc)
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
   this->api_enabled_value_[0] = '\0';
+  this->api_text_value_[0] = '\0';
   this->mqtt_enabled_value_[0] = '\0';
   this->mqtt_server_value_[0] = '\0';
   this->mqtt_user_value_[0] = '\0';
@@ -350,6 +376,7 @@ void Iot::setup()
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
   this->api_enabled_value_[0] = '\0';
+  this->api_text_value_[0] = '\0';
   this->mqtt_enabled_value_[0] = '\0';
   this->mqtt_server_value_[0] = '\0';
   this->mqtt_user_value_[0] = '\0';
@@ -375,6 +402,7 @@ void Iot::setup()
   iot_web_conf_.addParameterGroup(&time_group_);
 
   api_group_.addItem(&api_enabled_param_);
+  api_group_.addItem(&api_text_param_);
   iot_web_conf_.addParameterGroup(&api_group_);
 
   mqtt_group_.addItem(&mqtt_enabled_param_);
