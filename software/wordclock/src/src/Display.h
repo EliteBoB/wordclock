@@ -77,6 +77,7 @@ private:
   bool _show_ampm = 0;
 
   // Addressable bus to control the LEDs.
+// Try NeoPixelBus<NeoGrbFeature, NeoWs2813Method> strip(16, 2); from https://github.com/Makuna/NeoPixelBus/wiki/FAQ-%230 to stop flickering
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> _pixels;
 
   // Reacts to change in ambient light to adapt the power of the LEDs
