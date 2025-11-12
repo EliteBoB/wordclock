@@ -343,7 +343,7 @@ void Iot::updateClockFromParams_()
 
   display_->setHourlyAnimationValue(parseBooleanValue(hourly_animation_value_));    
   display_->setShowAmPm(parseBooleanValue(show_ampm_value_));
-  display_->setSensorSentivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
+  display_->setSensorSensitivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
   
   updateClockRTCFromParams_();
 }

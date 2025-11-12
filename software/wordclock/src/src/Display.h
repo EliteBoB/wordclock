@@ -23,7 +23,7 @@ public:
   void setClockFace(ClockFace* clockface);
 
   // Sets the sensor sentivity of the brightness controller.
-  void setSensorSentivity(int value) { _brightnessController.setSensorSensitivity(value); }
+  void setSensorSensitivity(int value) { _brightnessController.setSensorSensitivity(value); }
 
   // Sets the sensor sentivity of the brightness controller.
   float getRawSensorValue() { return _brightnessController.readSensor(); }
