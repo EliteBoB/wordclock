@@ -137,7 +137,7 @@
     const paintCanvas = document.querySelector("canvas");
     const context = paintCanvas.getContext("2d");
     const colorPicker = document.querySelector("input[type='color']");
-    context.fillRect(0, 0, 11, 10);
+    context.fillRect(0, 0, 12, 11);
     context.fillStyle = "#fff";
 
     let x = 0,
@@ -162,8 +162,8 @@
         ? event.targetTouches[0].clientY - rect.top
         : event.offsetY;
       if (isMouseDown) {
-        const newX = Math.floor((evtx / paintCanvas.clientWidth) * 11);
-        const newY = Math.floor((evty / paintCanvas.clientHeight) * 10);
+        const newX = Math.floor((evtx / paintCanvas.clientWidth) * 12);
+        const newY = Math.floor((evty / paintCanvas.clientHeight) * 11);
         context.fillRect(newX, newY, 1, 1);
         x = newX;
         y = newY;
@@ -184,8 +184,8 @@
 
     const updateText = () => {
       let str = "";
-      for (let y = 0; y < 10; y++) {
-        for (let x = 0; x < 11; x++) {
+      for (let y = 0; y < 11; y++) {
+        for (let x = 0; x < 12; x++) {
           const p = context.getImageData(x, y, 1, 1).data;
           // 256 colors palette
           // str += ("00" + palette.indexOf(rgbToHexString(p)).toString(16)).slice(-2);
@@ -284,14 +284,14 @@
       let strOut = "";
       let originalColor = colorPicker.value;
       context.fillStyle = `#0000`;
-      context.fillRect(0, 0, 11, 10);
+      context.fillRect(0, 0, 12, 11);
       for (let i = 0; i < 110; i++) {
         const char = str[i] || 'f';
         let colIdx = parseInt(char, 16);
         strOut += isNaN(colIdx) ? "x" : char;
         const col = isNaN(colIdx) ? customColor : "#" + palette[colIdx];
         context.fillStyle = col;
-        context.fillRect(i % 11, Math.floor(i / 11), 1, 1);
+        context.fillRect(i % 11, Math.floor(i / 12), 1, 1);
       }
       context.fillStyle = originalColor;
       fetchNext(strOut);

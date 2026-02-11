@@ -288,19 +288,19 @@ bool FrenchClockFace::stateForTime(int hour, int minute, int second, bool show_a
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+  //switch (leftover)
+  //{
+  //case 4:
+  //  _state[mapMinute(TopLeft)] = true;
+  //case 3: // fall through
+  //  _state[mapMinute(BottomLeft)] = true;
+  //case 2: // fall through
+  //  _state[mapMinute(BottomRight)] = true;
+  //case 1: // fall through
+  //  _state[mapMinute(TopRight)] = true;
+  //case 0: // fall through
+  //  break;
+  //}
   return true;
 }
 
@@ -506,19 +506,19 @@ bool EnglishClockFace::stateForTime(int hour, int minute, int second, bool show_
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+ // switch (leftover)
+ // {
+ // case 4:
+ //   _state[mapMinute(TopLeft)] = true;
+ // case 3: // fall through
+ //   _state[mapMinute(BottomLeft)] = true;
+ // case 2: // fall through
+ //   _state[mapMinute(BottomRight)] = true;
+ // case 1: // fall through
+ //   _state[mapMinute(TopRight)] = true;
+ // case 0: // fall through
+ //   break;
+ // }
   return true;
 }
 
@@ -919,18 +919,18 @@ case 0:
     DLOGLN(minute);
   }
 
-  switch (leftover)
-  {
-  case 4:
-    _state[mapMinute(TopLeft)] = true;
-  case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
-  case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
-  case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
-  case 0: // fall through
-    break;
-  }
+ // switch (leftover)
+ // {
+ // case 4:
+ //   _state[mapMinute(TopLeft)] = true;
+ // case 3: // fall through
+ //   _state[mapMinute(BottomLeft)] = true;
+ // case 2: // fall through
+ //   _state[mapMinute(BottomRight)] = true;
+ // case 1: // fall through
+ //   _state[mapMinute(TopRight)] = true;
+ // case 0: // fall through
+ //   break;
+ // }
   return true;
 }
