@@ -134,10 +134,20 @@ private:
   // Value of the LDR sensitivity parameter.
   char ldr_sensitivity_value_[IOT_CONFIG_VALUE_LENGTH];
 
+  // Colour mode list box
+  IotRangeValueParameter color_mode_param_;
+  // Value of the color mode parameter.
+  char color_mode_value_[IOT_CONFIG_VALUE_LENGTH];
+
   // Text color parameter.
   iotwebconf::TextParameter color_param_;
   // Value of the color parameter.
   char color_value_[IOT_CONFIG_VALUE_LENGTH];
+
+  // Select animation to be played on the hour
+  IotRangeValueParameter hourly_animation_param_;
+  // Value of the animation option
+  char hourly_animation_value_[IOT_CONFIG_VALUE_LENGTH];
 
   // Enables NTP time setting.
   IotRangeValueParameter ntp_enabled_param_;
@@ -158,6 +168,10 @@ private:
   IotRangeValueParameter api_enabled_param_;
   // Value of the API setting option.
   char api_enabled_value_[IOT_CONFIG_VALUE_LENGTH];
+
+  // API text input parameter and value
+  iotwebconf::TextParameter api_text_param_;
+  char api_text_value_[IOT_CONFIG_VALUE_LENGTH];
 
   // Enables MQTT client.
   IotRangeValueParameter mqtt_enabled_param_;

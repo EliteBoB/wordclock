@@ -3,18 +3,13 @@
 #include <IotWebConf.h>
 #include <NeoPixelAnimator.h>
 #include <NeoPixelBrightnessBus.h>
-
 #include "BrightnessController.h"
 #include "ClockFace.h"
-#include "nodo.h"
 #include "Font.h"
+#include "pins.h"
 
-// The pin to control the matrix // Default pin 32
-#ifndef NEOPIXEL_PIN
-#define NEOPIXEL_PIN 13
-#endif
-//
 #define TIME_CHANGE_ANIMATION_SPEED 400
+static const RgbColor black = RgbColor(0x00, 0x00, 0x00);
 
 class Display
 {
@@ -26,10 +21,9 @@ public:
   void setColor(const RgbColor &color);
   RgbColor getColor() { return _brightnessController.getOriginalColor(); };
   void setClockFace(ClockFace* clockface);
-  void runBootAnimation();
 
   // Sets the sensor sentivity of the brightness controller.
-  void setSensorSentivity(int value) { _brightnessController.setSensorSensitivity(value); }
+  void setSensorSensitivity(int value) { _brightnessController.setSensorSensitivity(value); }
 
   // Sets the sensor sentivity of the brightness controller.
   float getRawSensorValue() { return _brightnessController.readSensor(); }
@@ -56,6 +50,12 @@ public:
   };
   Mode getMode() { return _mode; }
 
+  void setColorRandValue(bool value); // Declare the setter method
+  void setHourlyAnimationValue(bool value); // Declare the setter method
+  void playHourlyAnimation(); // Declare the hourly animation method
+  void runBootAnimation();
+  void setColorWaveValue(bool value); // Declare the setter method
+
 private:
   // Updates pixel color on the display.
   void _update(int animationSpeed = TIME_CHANGE_ANIMATION_SPEED);
@@ -71,10 +71,13 @@ private:
   Mode _mode;
   std::vector<RgbColor> _matrix_buf;
   
+  RgbColor _cachedColor = black; // Cached color for updates
+
   // Whether the display should show AM/PM information.
   bool _show_ampm = 0;
 
   // Addressable bus to control the LEDs.
+// Try NeoPixelBus<NeoGrbFeature, NeoWs2813Method> strip(16, 2); from https://github.com/Makuna/NeoPixelBus/wiki/FAQ-%230 to stop flickering
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> _pixels;
 
   // Reacts to change in ambient light to adapt the power of the LEDs
@@ -104,4 +107,16 @@ private:
   void _fadeAll(uint8_t darkenBy);
   void _fadeAnimUpdate(const AnimationParam &param);
   void _displayCharacter(FontTable fontTable, char character, int scrollPosition, RgbColor color);
+
+  bool color_rand_value_ = false; // Add this member variable
+  bool hourly_animation_value_ = false; // Add this member variable
+  bool color_wave_value_ = false; // Add this member variable
+
+  void hourlyAnimationFlash();
+  void hourlyAnimationRainbow();
+  void hourlyAnimationWave();
+  void hourlyAnimationSparkle();
+  void hourlyAnimationChasingLights();
+  void hourlyAnimationExpandingCircle();
 };
+
